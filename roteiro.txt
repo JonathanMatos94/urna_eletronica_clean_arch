@@ -1,0 +1,255 @@
+﻿ UrnaEletronica.Domain (Camada de Domínio)
+📁 Entities/
+Eleitor
+Atributos:
+
+Id: Guid
+
+Nome: string
+
+CPF: CPF (ValueObject)
+
+TituloEleitoral: TituloEleitoral (ValueObject)
+
+JaVotou: bool
+
+Métodos:
+
+ValidarTitulo(): valida o título
+
+RegistrarVoto(): altera o estado de JaVotou
+
+Candidato
+Atributos:
+
+Id: Guid
+
+Nome: string
+
+Numero: int
+
+Partido: string
+
+Métodos:
+
+Nenhum específico no domínio (simples agregação)
+
+Voto
+Atributos:
+
+Id: Guid
+
+EleitorId: Guid
+
+CandidatoId: Guid (nulo para branco)
+
+DataHora: DateTime
+
+Métodos:
+
+Validar(): valida integridade do voto
+
+Eleicao
+Atributos:
+
+Id: Guid
+
+DataInicio: DateTime
+
+DataFim: DateTime
+
+Ativa: bool
+
+Métodos:
+
+Iniciar(), Encerrar()
+
+📁 ValueObjects/
+TituloEleitoral
+Atributos:
+
+Numero: string
+
+Métodos:
+
+ValidarFormato()
+
+CPF
+Atributos:
+
+Numero: string
+
+Métodos:
+
+ValidarFormato()
+
+NomeCompleto
+Atributos:
+
+Valor: string
+
+Métodos:
+
+Formatar(), Validar()
+
+📁 Interfaces/
+IRepositorioEleitor
+
+Eleitor ObterPorCPF(string cpf)
+
+Eleitor ObterPorTitulo(string titulo)
+
+void Atualizar(Eleitor eleitor)
+
+IRepositorioCandidato
+
+IEnumerable<Candidato> ListarTodos()
+
+Candidato ObterPorNumero(int numero)
+
+IRepositorioVoto
+
+void Registrar(Voto voto)
+
+IEnumerable<Voto> ListarPorEleitor(Guid eleitorId)
+
+📁 Exceptions/
+VotoInvalidoException: erro ao tentar votar de forma indevida
+
+EleitorNaoEncontradoException: para CPF/título inexistente
+
+🎯 UrnaEletronica.Application (Camada de Aplicação)
+📁 UseCases/
+RegistrarVotoUseCase
+Atributos:
+
+IRepositorioEleitor, IRepositorioCandidato, IRepositorioVoto
+
+Métodos:
+
+Executar(VotoDTO votoDto)
+
+valida eleitor
+
+valida candidato
+
+cria entidade Voto
+
+salva no repositório
+
+ListarCandidatosUseCase
+Atributos:
+
+IRepositorioCandidato
+
+Métodos:
+
+Executar(): retorna lista de CandidatoDTO
+
+AutenticarEleitorUseCase
+Atributos:
+
+IRepositorioEleitor
+
+Métodos:
+
+Executar(string cpf, string titulo): valida dados e retorna EleitorDTO
+
+IniciarEleicaoUseCase
+Atributos:
+
+IRepositorioEleicao
+
+Métodos:
+
+Executar(DateTime inicio, DateTime fim)
+
+📁 DTOs/
+Usados para transportar dados entre UI e UseCases.
+
+CandidatoDTO
+
+Nome, Numero, Partido
+
+EleitorDTO
+
+Nome, CPF, JaVotou
+
+VotoDTO
+
+TituloEleitoral, NumeroCandidato
+
+🗃️ UrnaEletronica.Infrastructure (Data e Serviços)
+📁 Data/Context/
+UrnaDbContext
+Classe do Entity Framework que gerencia:
+
+DbSet<Eleitor>
+
+DbSet<Candidato>
+
+DbSet<Voto>
+
+📁 Repositories/
+RepositorioEleitor
+Implementa IRepositorioEleitor
+
+RepositorioCandidato
+Implementa IRepositorioCandidato
+
+RepositorioVoto
+Implementa IRepositorioVoto
+
+📁 Configurations/
+Usadas para configurar o mapeamento das entidades (EF Fluent API).
+
+📁 Services/
+ServicoDeCriptografia
+Métodos:
+
+Criptografar(string valor)
+
+Descriptografar(string valor)
+
+LogService
+Grava logs do sistema (voto realizado, tentativa inválida, etc.)
+
+🖥️ UrnaEletronica.UI (Windows Forms)
+📁 Forms/
+TelaLogin: tela inicial para autenticação
+
+TelaVotacao: escolha do candidato
+
+TelaResultados: mostra apuração
+
+TelaConfirmacao: confirma voto
+
+📁 ViewModels/
+LoginViewModel
+
+CPF, Titulo, MensagemErro
+
+VotacaoViewModel
+
+ListaCandidatos, NumeroDigitado, Mensagem
+
+📁 Controllers/
+LoginController
+
+Injeta AutenticarEleitorUseCase
+
+Método: Login()
+
+VotacaoController
+
+Injeta ListarCandidatosUseCase, RegistrarVotoUseCase
+
+Métodos: Listar(), Votar()
+
+🧪 UrnaEletronica.Tests
+EleitorTests: testa validações de eleitor
+
+RegistrarVotoUseCaseTests: testa o caso de uso principal com mocks
+
+LoginControllerTests: valida regras de login
+

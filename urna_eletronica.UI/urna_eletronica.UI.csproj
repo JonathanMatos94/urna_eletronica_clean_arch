@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\urna_eletronica.Application\urna_eletronica.DTOs.csproj" />
+    <ProjectReference Include="..\urna_eletronica.Data\urna_eletronica.Data.csproj" />
+  </ItemGroup>
+
+</Project>
